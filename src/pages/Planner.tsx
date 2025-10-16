@@ -2,6 +2,8 @@ import { useMemo, useState } from 'react';
 import { AmadeusClient } from '../services/amadeus';
 import { mapAmadeusActivity } from '../utils/mapAmadeusToAttraction';
 import type { AttractionSummary } from '../types/attraction';
+import type { SavedPlan } from '../types/plan';
+import { savePlan as persistPlan } from '../utils/storage';
 
 import PlannerSearchBar from '../components/planner/PlannerSearchBar';
 import ActivityCard from '../components/planner/ActivityCard';
@@ -63,6 +65,7 @@ export default function Planner() {
     setErr('');
     setResults([]);
     setPage(1);
+    setPlan([]);
 
     try {
       const geo = await geocode(p.destination);
@@ -89,6 +92,22 @@ export default function Planner() {
   };
   const removeFromPlan = (id: string) =>
     setPlan((p) => p.filter((x) => x.id !== id));
+
+  const handleSavePlan = (name: string) => {
+    const total = plan.reduce((s, a) => s + (a.price?.amount ?? 0), 0);
+    const payload: SavedPlan = {
+      id: crypto.randomUUID(),
+      name,
+      destination,
+      days,
+      budget,
+      total,
+      items: plan,
+      createdAt: new Date().toISOString(),
+    };
+    persistPlan(payload);
+    alert('Plan saved locally');
+  };
 
   return (
     <section className='grid gap-8 lg:grid-cols-[1fr,380px]'>
@@ -135,7 +154,14 @@ export default function Planner() {
         )}
       </div>
 
-      <PlanSidebar budget={budget} items={plan} onRemove={removeFromPlan} />
+      <PlanSidebar
+        destination={destination}
+        days={days}
+        budget={budget}
+        items={plan}
+        onRemove={removeFromPlan}
+        onSave={handleSavePlan}
+      />
     </section>
   );
 }

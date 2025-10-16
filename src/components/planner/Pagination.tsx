@@ -16,7 +16,7 @@ export default function Pagination({
 
   const btn =
     'min-w-9 h-9 inline-flex items-center justify-center rounded-md text-sm px-3 py-2 bg-white shadow hover:shadow-md transition';
-  const active = 'bg-blue-600 text-white hover:shadow-md';
+  const active = 'bg-blue-600 text-blue-600 font-bold hover:shadow-md';
 
   const items = Array.from({ length: pages }, (_, i) => i + 1).slice(
     Math.max(0, page - 3),
