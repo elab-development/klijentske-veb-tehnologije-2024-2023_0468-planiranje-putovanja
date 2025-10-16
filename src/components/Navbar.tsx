@@ -38,12 +38,6 @@ export default function Navbar() {
               My Plans
             </NavLink>
             <NavLink
-              to='/explore'
-              className='text-sm text-blue-800 hover:text-blue-600'
-            >
-              Explore
-            </NavLink>
-            <NavLink
               to='/about'
               className='text-sm text-blue-800 hover:text-blue-600'
             >
@@ -88,13 +82,6 @@ export default function Navbar() {
               className='text-sm text-blue-800 hover:text-blue-600'
             >
               My Plans
-            </NavLink>
-            <NavLink
-              to='/explore'
-              onClick={() => setOpen(false)}
-              className='text-sm text-blue-800 hover:text-blue-600'
-            >
-              Explore
             </NavLink>
             <NavLink
               to='/about'
