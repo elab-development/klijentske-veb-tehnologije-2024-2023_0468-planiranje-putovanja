@@ -5,10 +5,12 @@ export interface AttractionSummary {
   name: string;
   lat: number;
   lon: number;
+  description?: string;
+  imageUrl?: string;
+  images?: string[];
   categories?: string[];
   rating?: number;
+  durationText?: string;
   price?: Money;
-  imageUrl?: string;
-  description?: string;
   providerUrl?: string;
 }

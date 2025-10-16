@@ -63,6 +63,7 @@ export class AmadeusClient {
     });
     if (!res.ok) throw new Error(`Amadeus search failed: ${res.status}`);
     const data = await res.json();
+    console.log('Amadeus data', data);
     return Array.isArray(data?.data) ? data.data : [];
   }
 }
