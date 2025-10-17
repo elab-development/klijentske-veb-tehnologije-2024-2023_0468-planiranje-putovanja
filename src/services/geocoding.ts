@@ -9,11 +9,14 @@ export async function geocodeCity(
   url.searchParams.set('type', 'city');
   url.searchParams.set('limit', '1');
   url.searchParams.set('apiKey', apiKey);
+
   const res = await fetch(url.toString());
   if (!res.ok) return null;
+
   const data = await res.json();
   const feat = data?.features?.[0];
   if (!feat?.geometry?.coordinates) return null;
+
   const [lon, lat] = feat.geometry.coordinates;
   return { lat, lon };
 }

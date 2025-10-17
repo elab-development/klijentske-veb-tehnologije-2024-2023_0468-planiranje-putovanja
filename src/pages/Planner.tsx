@@ -10,6 +10,7 @@ import ActivityCard from '../components/planner/ActivityCard';
 import PlanSidebar from '../components/planner/PlanSidebar';
 import Pagination from '../components/planner/Pagination';
 import LoadingGrid from '../components/planner/LoadingGrid';
+import { geocodeCity } from '../services/geocoding';
 
 export default function Planner() {
   const [destination, setDestination] = useState('');
@@ -37,19 +38,28 @@ export default function Planner() {
     []
   );
 
-  async function geocode(
-    query: string
-  ): Promise<{ lat: number; lon: number } | null> {
-    const preset: Record<string, { lat: number; lon: number }> = {
-      rome: { lat: 41.9028, lon: 12.4964 },
-      paris: { lat: 48.8566, lon: 2.3522 },
-      belgrade: { lat: 44.7866, lon: 20.4489 },
-      london: { lat: 51.5072, lon: -0.1276 },
-      barcelona: { lat: 41.3874, lon: 2.1686 },
-    };
-    const k = query.trim().toLowerCase();
-    return preset[k] ?? null;
-  }
+  const presets: Record<string, { lat: number; lon: number }> = {
+    rome: { lat: 41.9028, lon: 12.4964 },
+    paris: { lat: 48.8566, lon: 2.3522 },
+    belgrade: { lat: 44.7866, lon: 20.4489 },
+    london: { lat: 51.5072, lon: -0.1276 },
+    barcelona: { lat: 41.3874, lon: 2.1686 },
+  };
+
+  const getCoords = async (q: string) => {
+    const key = q.trim().toLowerCase();
+
+    const apiKey = import.meta.env.VITE_GEOAPIFY_API_KEY as string | undefined;
+    let coords: { lat: number; lon: number } | null = null;
+
+    if (apiKey) {
+      coords = await geocodeCity(q, apiKey);
+    }
+
+    if (!coords && presets[key]) coords = presets[key];
+
+    return coords;
+  };
 
   const handleSearch = async (p: {
     destination: string;
@@ -68,8 +78,11 @@ export default function Planner() {
     setPlan([]);
 
     try {
-      const geo = await geocode(p.destination);
-      if (!geo) throw new Error('Destination not found (demo geocoder)');
+      const geo = await getCoords(p.destination);
+      if (!geo) {
+        throw new Error('Destination not found');
+      }
+
       const data = await amadeus.searchActivities({
         lat: geo.lat,
         lon: geo.lon,
